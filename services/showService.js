@@ -4,12 +4,11 @@ export const createShow = async (showData) => {
   try {
     const { movieId, showDate, showTimes, availableSeats, ticketPrice } =
       showData;
-
+      
     const existingShow = await Show.findById(movieId);
     if (existingShow) {
       throw new Error("Show already exists");
     }
-
     const show = await Show.create({
       movie: movieId,
       showDate,

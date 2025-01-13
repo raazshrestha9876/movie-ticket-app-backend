@@ -27,9 +27,10 @@ export const addMovie = async (movieData, filePath) => {
   }
 };
 
-export const getAllMovies = async () => {
-  const movies = await Movie.find();
-  return movies;
+export const getAllMovies = async (skip, limit, sort, filter) => {
+  const movies = await Movie.find(filter).sort(sort).skip(skip).limit(limit).exec();
+  const totalCount = await Movie.countDocuments();
+  return { movies, totalCount };
 };
 
 export const getMovieById = async (movieId) => {

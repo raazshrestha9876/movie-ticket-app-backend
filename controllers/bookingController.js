@@ -1,3 +1,4 @@
+import { Booking } from "../models/Booking.js";
 import * as bookingService from "../services/bookingService.js";
 
 export const createBooking = async (req, res) => {
@@ -17,6 +18,30 @@ export const createBooking = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+export const getDailyBookingOverview = async(req, res) => {
+  try{
+    const analytics = await bookingService.getDailyBookingOverview();
+    res.status(200).json({ 
+      message: 'DailyBooking Overview data retrieved successfully',
+      analytics,
+    });
+  }catch(error){
+    res.status(400).json({ message: error.message });
+  }
+}
+
+export const totalRevenueByMovie = async (req, res) => {
+  try{
+    const analytics = await bookingService.totalRevenueByMovie();
+    res.status(200).json({
+      message: 'Total Revenue by Movie data retrieved successfully',
+      analytics,
+    });
+  }catch(error){
+    res.status(400).json({ message: error.message });
+  }
+}
 
 export const getUserBookings = async (req, res) => {
   try {

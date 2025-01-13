@@ -1,6 +1,6 @@
 import express from "express";
 import { body, param } from "express-validator";
-import { createBooking, getUserBookings, getShowBookings, cancelBooking } from "../controllers/bookingController.js";
+import { createBooking, getUserBookings, getShowBookings, cancelBooking, getDailyBookingOverview, totalRevenueByMovie } from "../controllers/bookingController.js";
 import { authenticate } from "../middlewares/authenticate.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
 
@@ -29,5 +29,7 @@ router.post("/", authenticate, createBookingValidation, createBooking);
 router.get("/user", authenticate, getUserBookings);
 router.get("/show/:showId", authenticate, showIdValidation, getShowBookings);
 router.delete("/:bookingId", authenticate, bookingIdValidation, cancelBooking );
+router.get('/analytics/dailyOverview', authenticate, getDailyBookingOverview  );
+router.get('/analytics/totalRevenue', authenticate, totalRevenueByMovie  );
 
 export { router as bookingRoute }

@@ -80,7 +80,6 @@ export const createBooking = async (data) => {
   </div>
 `;
 
-
     await sendEmail(user.email, subject, null, html);
 
     return { booking, ticket };
@@ -89,6 +88,67 @@ export const createBooking = async (data) => {
     throw error;
   }
 };
+
+export const getDailyBookingOverview = async () => {
+  try {
+    const analytics = await Booking.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$bookingDate" },
+            month: { $month: "$bookingDate" },
+            day: { $dayOfMonth: "$bookingDate" },
+          },
+          totalBookings: { $sum: 1 },
+          totalRevenue: { $sum: "$totalAmount" },
+          avgBookingAmount: { $avg: "$totalAmount" },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
+      },
+    ]);
+    return analytics;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const totalRevenueByMovie = async () => {
+  try{
+    const analytics = await Booking.aggregate([
+      {
+        $lookup: {
+          from: "shows",
+          localField: "show",
+          foreignField: "_id",
+          as: "showDetails",
+        },
+      },
+      { $unwind: "$showDetails" },
+      {
+        $lookup: {
+          from: "movies",
+          localField: "showDetails.movie",
+          foreignField: "_id",
+          as: "movieDetails",
+        },
+      },
+      { $unwind: "$movieDetails" },
+      {
+        $group: {
+          _id: "$movieDetails.title",
+          totalRevenue: { $sum: "$totalAmount" },
+          totalBookings: { $sum: 1 },
+        },
+      },
+      { $sort: { totalRevenue: -1 } },
+    ]);
+    return analytics;
+  }catch(error){
+    throw error;
+  }
+}
 
 export const getUserBookings = async (userId) => {
   try {
